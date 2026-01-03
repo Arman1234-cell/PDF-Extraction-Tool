@@ -1,5 +1,13 @@
-# PDF-Extraction-Tool
-# 📂 DocuMind AI: Intelligent PDF Assistant
+# 📂 PDF-Extraction-Tool
+<h3>🚀 [Live Demo: DocuMind AI](https://huggingface.co/spaces/ghost4488/pdfExtraction)</h3>
+<div align="center">
+
+
+<p align="center">
+  <img src="https://github.com/Arman1234-cell/Assets/blob/main/545607a0-970e-45a7-bd04-e61ada2061a8_removalai_preview.png?raw=true" alt="DocuMind AI Header" width="50%" height="30%">
+</p>
+
+</div>
 
 **DocuMind AI** is a professional-grade Retrieval-Augmented Generation (RAG) application that allows you to have natural conversations with your PDF documents. By combining semantic search with the power of Gemini AI, it provides accurate, grounded answers to your most complex document queries.
 
@@ -19,13 +27,11 @@
 
 The application uses **Retrieval-Augmented Generation (RAG)** to ensure that every answer the AI provides is backed by the actual text in your documents, preventing hallucinations:
 
-
-
-1.  **Ingestion:** The PDF is parsed using OCR and split into semantic chunks.
-2.  **Vectorization:** Each chunk is converted into a vector (mathematical representation) and stored in **ChromaDB**.
-3.  **Retrieval:** When you ask a question, the system performs a semantic search to find the most relevant chunks.
-4.  **Augmentation:** These relevant chunks are provided to the Gemini model as ground-truth context.
-5.  **Generation:** The AI generates an answer based *only* on that context.
+1. **Ingestion:** The PDF is parsed using OCR and split into semantic chunks.
+2. **Vectorization:** Each chunk is converted into a vector representation and stored in **ChromaDB**.
+3. **Retrieval:** When you ask a question, the system performs a semantic search to find the most relevant chunks.
+4. **Augmentation:** These relevant chunks are provided to the Gemini model as ground-truth context.
+5. **Generation:** The AI generates an answer based *only* on that context.
 
 ---
 
@@ -50,5 +56,5 @@ The application uses **Retrieval-Augmented Generation (RAG)** to ensure that eve
 ### Installation
 1. **Clone the repository:**
    ```bash
-   git clone [https://github.com/your-username/documind-ai.git](https://github.com/your-username/documind-ai.git)
-   cd documind-ai
+   git clone [https://github.com/ghost4488/pdfExtraction.git](https://github.com/ghost4488/pdfExtraction.git)
+   cd pdfExtraction

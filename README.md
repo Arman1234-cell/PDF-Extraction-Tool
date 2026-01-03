@@ -1,15 +1,17 @@
 # 📂 PDF-Extraction-Tool
-<h3>🚀 [Live Demo: DocuMind AI](https://huggingface.co/spaces/ghost4488/pdfExtraction)</h3>
+**DocuMind AI** is a professional-grade Retrieval-Augmented Generation (RAG) application that allows you to have natural conversations with your PDF documents. By combining semantic search with the power of Gemini AI, it provides accurate, grounded answers to your most complex document queries.
+
 <div align="center">
 
 
 <p align="center">
   <img src="https://github.com/Arman1234-cell/Assets/blob/main/545607a0-970e-45a7-bd04-e61ada2061a8_removalai_preview.png?raw=true" alt="DocuMind AI Header" width="50%" height="30%">
+  <h3>🚀 [Live Demo: DocuMind AI](https://huggingface.co/spaces/ghost4488/pdfExtraction)</h3>
 </p>
 
 </div>
 
-**DocuMind AI** is a professional-grade Retrieval-Augmented Generation (RAG) application that allows you to have natural conversations with your PDF documents. By combining semantic search with the power of Gemini AI, it provides accurate, grounded answers to your most complex document queries.
+
 
 ---
 

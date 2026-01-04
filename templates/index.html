@@ -1,0 +1,1567 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>DocuMind AI - Chat with Your PDFs</title>
+  <meta name="description" content="Upload PDFs and chat with them using advanced RAG technology. Get instant answers from your documents.">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
+  <style>
+    *, *::before, *::after {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+    }
+
+    :root {
+      --background: hsl(240, 10%, 3.9%);
+      --foreground: hsl(0, 0%, 98%);
+      --card: hsl(240, 10%, 3.9%);
+      --card-foreground: hsl(0, 0%, 98%);
+      --primary: hsl(263, 70%, 50%);
+      --primary-foreground: hsl(0, 0%, 98%);
+      --secondary: hsl(240, 3.7%, 15.9%);
+      --secondary-foreground: hsl(0, 0%, 98%);
+      --muted: hsl(240, 3.7%, 15.9%);
+      --muted-foreground: hsl(240, 5%, 64.9%);
+      --accent: hsl(240, 3.7%, 15.9%);
+      --accent-foreground: hsl(0, 0%, 98%);
+      --border: hsl(240, 3.7%, 15.9%);
+      --ring: hsl(263, 70%, 50%);
+      --violet: hsl(263, 70%, 50%);
+      --teal: hsl(172, 66%, 50%);
+      --amber: hsl(38, 92%, 50%);
+      --rose: hsl(347, 77%, 50%);
+      --emerald: hsl(160, 84%, 39%);
+      --sky: hsl(199, 89%, 48%);
+      --radius: 0.5rem;
+    }
+
+    :root.light {
+      --background: hsl(0, 0%, 100%);
+      --foreground: hsl(240, 10%, 3.9%);
+      --card: hsl(0, 0%, 100%);
+      --card-foreground: hsl(240, 10%, 3.9%);
+      --primary: hsl(263, 70%, 50%);
+      --primary-foreground: hsl(0, 0%, 98%);
+      --secondary: hsl(240, 4.8%, 95.9%);
+      --secondary-foreground: hsl(240, 5.9%, 10%);
+      --muted: hsl(240, 4.8%, 95.9%);
+      --muted-foreground: hsl(240, 3.8%, 46.1%);
+      --accent: hsl(240, 4.8%, 95.9%);
+      --accent-foreground: hsl(240, 5.9%, 10%);
+      --border: hsl(240, 5.9%, 90%);
+      --ring: hsl(263, 70%, 50%);
+      --violet: hsl(263, 70%, 50%);
+      --teal: hsl(172, 66%, 50%);
+      --amber: hsl(38, 92%, 50%);
+      --rose: hsl(347, 77%, 50%);
+      --emerald: hsl(160, 84%, 39%);
+      --sky: hsl(199, 89%, 48%);
+    }
+
+    body {
+      font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
+      background: var(--background);
+      color: var(--foreground);
+      line-height: 1.6;
+      min-height: 100vh;
+      transition: background 0.3s, color 0.3s;
+    }
+
+    .container {
+      max-width: 1200px;
+      margin: 0 auto;
+      padding: 0 1.5rem;
+    }
+
+    /* Header */
+    .header {
+      position: fixed;
+      top: 0;
+      left: 0;
+      right: 0;
+      z-index: 50;
+      background: hsla(240, 10%, 3.9%, 0.8);
+      backdrop-filter: blur(12px);
+      border-bottom: 1px solid var(--border);
+      transition: background 0.3s;
+    }
+
+    :root.light .header {
+      background: hsla(0, 0%, 100%, 0.8);
+    }
+
+    .header-content {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      height: 4rem;
+    }
+
+    .logo {
+      display: flex;
+      align-items: center;
+      gap: 0.75rem;
+      text-decoration: none;
+      color: var(--foreground);
+    }
+
+    .logo-icon {
+      width: 2rem;
+      height: 2rem;
+      background: linear-gradient(135deg, var(--violet), var(--teal));
+      border-radius: 0.5rem;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+
+    .logo-text {
+      font-size: 1.25rem;
+      font-weight: 700;
+    }
+
+    .nav-links {
+      display: flex;
+      gap: 2rem;
+      list-style: none;
+    }
+
+    .nav-links a {
+      color: var(--muted-foreground);
+      text-decoration: none;
+      font-size: 0.875rem;
+      transition: color 0.2s;
+    }
+
+    .nav-links a:hover {
+      color: var(--foreground);
+    }
+
+    .header-actions {
+      display: flex;
+      gap: 0.75rem;
+      align-items: center;
+    }
+
+    /* Theme Toggle */
+    .theme-toggle {
+      width: 2.5rem;
+      height: 2.5rem;
+      border-radius: 0.5rem;
+      background: var(--secondary);
+      border: 1px solid var(--border);
+      color: var(--foreground);
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      transition: all 0.2s;
+      font-size: 1.25rem;
+    }
+
+    .theme-toggle:hover {
+      background: var(--accent);
+      transform: scale(1.05);
+    }
+
+    .theme-toggle .sun-icon {
+      display: none;
+    }
+
+    .theme-toggle .moon-icon {
+      display: block;
+    }
+
+    :root.light .theme-toggle .sun-icon {
+      display: block;
+    }
+
+    :root.light .theme-toggle .moon-icon {
+      display: none;
+    }
+
+    /* Buttons */
+    .btn {
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      gap: 0.5rem;
+      padding: 0.625rem 1.25rem;
+      border-radius: var(--radius);
+      font-size: 0.875rem;
+      font-weight: 500;
+      text-decoration: none;
+      cursor: pointer;
+      border: none;
+      transition: all 0.2s;
+    }
+
+    .btn-primary {
+      background: linear-gradient(135deg, var(--violet), var(--teal));
+      color: white;
+      box-shadow: 0 4px 20px hsla(263, 70%, 50%, 0.3);
+    }
+
+    .btn-primary:hover {
+      transform: translateY(-2px);
+      box-shadow: 0 6px 25px hsla(263, 70%, 50%, 0.4);
+    }
+
+    .btn-secondary {
+      background: var(--secondary);
+      color: var(--secondary-foreground);
+      border: 1px solid var(--border);
+    }
+
+    .btn-secondary:hover {
+      background: var(--accent);
+    }
+
+    .btn-outline {
+      background: transparent;
+      color: var(--foreground);
+      border: 1px solid var(--border);
+    }
+
+    .btn-outline:hover {
+      background: var(--accent);
+    }
+
+    .btn-lg {
+      padding: 0.875rem 2rem;
+      font-size: 1rem;
+    }
+
+    /* Hero Section */
+    .hero {
+      padding: 8rem 0 4rem;
+      text-align: center;
+      position: relative;
+      overflow: hidden;
+    }
+
+    .hero::before {
+      content: '';
+      position: absolute;
+      top: 0;
+      left: 50%;
+      transform: translateX(-50%);
+      width: 100%;
+      height: 100%;
+      background: radial-gradient(ellipse at center top, hsla(263, 70%, 50%, 0.15) 0%, transparent 50%),
+                  radial-gradient(ellipse at 30% 20%, hsla(172, 66%, 50%, 0.1) 0%, transparent 40%);
+      pointer-events: none;
+    }
+
+    :root.light .hero::before {
+      background: radial-gradient(ellipse at center top, hsla(263, 70%, 50%, 0.1) 0%, transparent 50%),
+                  radial-gradient(ellipse at 30% 20%, hsla(172, 66%, 50%, 0.08) 0%, transparent 40%);
+    }
+
+    .hero-badge {
+      display: inline-flex;
+      align-items: center;
+      gap: 0.5rem;
+      padding: 0.375rem 1rem;
+      background: linear-gradient(135deg, hsla(263, 70%, 50%, 0.2), hsla(172, 66%, 50%, 0.2));
+      border: 1px solid hsla(263, 70%, 50%, 0.3);
+      border-radius: 9999px;
+      font-size: 0.875rem;
+      color: var(--foreground);
+      margin-bottom: 1.5rem;
+      animation: fadeInUp 0.6s ease-out;
+    }
+
+    .hero-badge span {
+      background: linear-gradient(90deg, var(--violet), var(--teal));
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+      background-clip: text;
+    }
+
+    .hero h1 {
+      font-size: clamp(2rem, 5vw, 4rem);
+      font-weight: 800;
+      line-height: 1.1;
+      margin-bottom: 1.5rem;
+      animation: fadeInUp 0.6s ease-out 0.1s both;
+    }
+
+    .gradient-text {
+      background: linear-gradient(135deg, var(--violet), var(--teal), var(--amber));
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+      background-clip: text;
+    }
+
+    .hero-description {
+      font-size: clamp(1rem, 2.5vw, 1.25rem);
+      color: var(--muted-foreground);
+      max-width: 600px;
+      margin: 0 auto 2rem;
+      padding: 0 1rem;
+      animation: fadeInUp 0.6s ease-out 0.2s both;
+    }
+
+    .hero-actions {
+      display: flex;
+      gap: 1rem;
+      justify-content: center;
+      flex-wrap: wrap;
+      animation: fadeInUp 0.6s ease-out 0.3s both;
+    }
+
+    .hero-stats {
+      display: flex;
+      gap: 2rem;
+      justify-content: center;
+      flex-wrap: wrap;
+      margin-top: 4rem;
+      padding-top: 2rem;
+      border-top: 1px solid var(--border);
+      animation: fadeInUp 0.6s ease-out 0.4s both;
+    }
+
+    .stat {
+      text-align: center;
+      min-width: 120px;
+    }
+
+    .stat-value {
+      font-size: clamp(1.5rem, 4vw, 2rem);
+      font-weight: 700;
+      background: linear-gradient(135deg, var(--violet), var(--teal));
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+      background-clip: text;
+    }
+
+    .stat-label {
+      font-size: 0.75rem;
+      color: var(--muted-foreground);
+    }
+
+    /* Sections */
+    .section {
+      padding: 4rem 0;
+    }
+
+    .section-header {
+      text-align: center;
+      margin-bottom: 3rem;
+    }
+
+    .section-badge {
+      display: inline-block;
+      padding: 0.25rem 0.75rem;
+      background: hsla(263, 70%, 50%, 0.1);
+      border: 1px solid hsla(263, 70%, 50%, 0.2);
+      border-radius: 9999px;
+      font-size: 0.75rem;
+      font-weight: 600;
+      text-transform: uppercase;
+      letter-spacing: 0.05em;
+      color: var(--violet);
+      margin-bottom: 1rem;
+    }
+
+    .section-title {
+      font-size: clamp(1.75rem, 4vw, 2.5rem);
+      font-weight: 700;
+      margin-bottom: 1rem;
+    }
+
+    .section-description {
+      color: var(--muted-foreground);
+      max-width: 600px;
+      margin: 0 auto;
+      padding: 0 1rem;
+    }
+
+    /* Steps */
+    .steps-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(260px, 1fr));
+      gap: 1.5rem;
+    }
+
+    .step-card {
+      padding: 1.5rem;
+      border-radius: 1rem;
+      border: 1px solid var(--border);
+      background: var(--card);
+      position: relative;
+      overflow: hidden;
+      transition: transform 0.3s, box-shadow 0.3s;
+    }
+
+    .step-card:hover {
+      transform: translateY(-4px);
+      box-shadow: 0 20px 40px hsla(0, 0%, 0%, 0.15);
+    }
+
+    :root:not(.light) .step-card:hover {
+      box-shadow: 0 20px 40px hsla(0, 0%, 0%, 0.3);
+    }
+
+    .step-card::before {
+      content: '';
+      position: absolute;
+      top: 0;
+      left: 0;
+      right: 0;
+      height: 3px;
+    }
+
+    .step-card:nth-child(1)::before { background: linear-gradient(90deg, var(--violet), var(--teal)); }
+    .step-card:nth-child(2)::before { background: linear-gradient(90deg, var(--teal), var(--emerald)); }
+    .step-card:nth-child(3)::before { background: linear-gradient(90deg, var(--amber), var(--rose)); }
+    .step-card:nth-child(4)::before { background: linear-gradient(90deg, var(--rose), var(--violet)); }
+
+    .step-number {
+      width: 2.5rem;
+      height: 2.5rem;
+      border-radius: 50%;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-weight: 700;
+      font-size: 1rem;
+      margin-bottom: 1rem;
+    }
+
+    .step-card:nth-child(1) .step-number { background: hsla(263, 70%, 50%, 0.2); color: var(--violet); }
+    .step-card:nth-child(2) .step-number { background: hsla(172, 66%, 50%, 0.2); color: var(--teal); }
+    .step-card:nth-child(3) .step-number { background: hsla(38, 92%, 50%, 0.2); color: var(--amber); }
+    .step-card:nth-child(4) .step-number { background: hsla(347, 77%, 50%, 0.2); color: var(--rose); }
+
+    .step-title {
+      font-size: 1.125rem;
+      font-weight: 600;
+      margin-bottom: 0.5rem;
+    }
+
+    .step-description {
+      color: var(--muted-foreground);
+      font-size: 0.875rem;
+    }
+
+    /* RAG Architecture Section */
+    .rag-section {
+      background: linear-gradient(180deg, hsla(263, 70%, 50%, 0.05) 0%, transparent 100%);
+      border-top: 1px solid var(--border);
+      border-bottom: 1px solid var(--border);
+    }
+
+    .rag-grid {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 3rem;
+      align-items: center;
+    }
+
+    .rag-diagram {
+      background: var(--card);
+      border: 1px solid var(--border);
+      border-radius: 1rem;
+      padding: 1.5rem;
+    }
+
+    .rag-flow {
+      display: flex;
+      flex-direction: column;
+      gap: 0.75rem;
+    }
+
+    .rag-step {
+      display: flex;
+      align-items: center;
+      gap: 1rem;
+      padding: 0.875rem;
+      background: var(--secondary);
+      border-radius: 0.5rem;
+      transition: transform 0.2s;
+    }
+
+    .rag-step:hover {
+      transform: translateX(8px);
+    }
+
+    .rag-icon {
+      width: 2.25rem;
+      height: 2.25rem;
+      border-radius: 0.5rem;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 1.125rem;
+      flex-shrink: 0;
+    }
+
+    .rag-step:nth-child(1) .rag-icon { background: hsla(263, 70%, 50%, 0.2); }
+    .rag-step:nth-child(2) .rag-icon { background: hsla(172, 66%, 50%, 0.2); }
+    .rag-step:nth-child(3) .rag-icon { background: hsla(38, 92%, 50%, 0.2); }
+    .rag-step:nth-child(4) .rag-icon { background: hsla(347, 77%, 50%, 0.2); }
+    .rag-step:nth-child(5) .rag-icon { background: hsla(160, 84%, 39%, 0.2); }
+
+    .rag-step-content h4 {
+      font-size: 0.8rem;
+      font-weight: 600;
+      margin-bottom: 0.125rem;
+    }
+
+    .rag-step-content p {
+      font-size: 0.7rem;
+      color: var(--muted-foreground);
+    }
+
+    .arrow {
+      text-align: center;
+      color: var(--muted-foreground);
+      font-size: 1rem;
+    }
+
+    .rag-explanation h3 {
+      font-size: 1.25rem;
+      font-weight: 600;
+      margin-bottom: 1rem;
+    }
+
+    .rag-explanation > p {
+      color: var(--muted-foreground);
+      margin-bottom: 1.5rem;
+      font-size: 0.875rem;
+    }
+
+    .rag-benefits {
+      display: flex;
+      flex-direction: column;
+      gap: 0.75rem;
+    }
+
+    .rag-benefit {
+      display: flex;
+      align-items: flex-start;
+      gap: 0.75rem;
+    }
+
+    .benefit-icon {
+      width: 1.5rem;
+      height: 1.5rem;
+      border-radius: 50%;
+      background: hsla(160, 84%, 39%, 0.2);
+      color: var(--emerald);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      flex-shrink: 0;
+      font-size: 0.75rem;
+    }
+
+    .rag-benefit p {
+      font-size: 0.875rem;
+      color: var(--muted-foreground);
+    }
+
+    .rag-benefit strong {
+      color: var(--foreground);
+    }
+
+    /* Features Grid */
+    .features-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+      gap: 1.5rem;
+    }
+
+    .feature-card {
+      padding: 1.5rem;
+      border-radius: 1rem;
+      border: 1px solid var(--border);
+      background: var(--card);
+      transition: transform 0.3s, box-shadow 0.3s;
+    }
+
+    .feature-card:hover {
+      transform: translateY(-4px);
+      box-shadow: 0 20px 40px hsla(0, 0%, 0%, 0.1);
+    }
+
+    :root:not(.light) .feature-card:hover {
+      box-shadow: 0 20px 40px hsla(0, 0%, 0%, 0.2);
+    }
+
+    .feature-icon {
+      width: 2.75rem;
+      height: 2.75rem;
+      border-radius: 0.75rem;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 1.25rem;
+      margin-bottom: 1rem;
+    }
+
+    .feature-card:nth-child(1) .feature-icon { background: hsla(263, 70%, 50%, 0.2); }
+    .feature-card:nth-child(2) .feature-icon { background: hsla(172, 66%, 50%, 0.2); }
+    .feature-card:nth-child(3) .feature-icon { background: hsla(38, 92%, 50%, 0.2); }
+    .feature-card:nth-child(4) .feature-icon { background: hsla(347, 77%, 50%, 0.2); }
+    .feature-card:nth-child(5) .feature-icon { background: hsla(160, 84%, 39%, 0.2); }
+    .feature-card:nth-child(6) .feature-icon { background: hsla(199, 89%, 48%, 0.2); }
+
+    .feature-title {
+      font-size: 1rem;
+      font-weight: 600;
+      margin-bottom: 0.5rem;
+    }
+
+    .feature-description {
+      font-size: 0.875rem;
+      color: var(--muted-foreground);
+    }
+
+    /* Use Cases */
+    .use-cases-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
+      gap: 1.5rem;
+    }
+
+    .use-case-card {
+      padding: 1.5rem;
+      border-radius: 1rem;
+      text-align: center;
+      transition: transform 0.3s;
+    }
+
+    .use-case-card:hover {
+      transform: scale(1.02);
+    }
+
+    .use-case-card:nth-child(1) { background: linear-gradient(135deg, hsla(263, 70%, 50%, 0.1), hsla(263, 70%, 50%, 0.05)); border: 1px solid hsla(263, 70%, 50%, 0.2); }
+    .use-case-card:nth-child(2) { background: linear-gradient(135deg, hsla(172, 66%, 50%, 0.1), hsla(172, 66%, 50%, 0.05)); border: 1px solid hsla(172, 66%, 50%, 0.2); }
+    .use-case-card:nth-child(3) { background: linear-gradient(135deg, hsla(38, 92%, 50%, 0.1), hsla(38, 92%, 50%, 0.05)); border: 1px solid hsla(38, 92%, 50%, 0.2); }
+    .use-case-card:nth-child(4) { background: linear-gradient(135deg, hsla(347, 77%, 50%, 0.1), hsla(347, 77%, 50%, 0.05)); border: 1px solid hsla(347, 77%, 50%, 0.2); }
+
+    .use-case-icon {
+      font-size: 2rem;
+      margin-bottom: 1rem;
+    }
+
+    .use-case-title {
+      font-size: 1rem;
+      font-weight: 600;
+      margin-bottom: 0.5rem;
+    }
+
+    .use-case-description {
+      font-size: 0.875rem;
+      color: var(--muted-foreground);
+    }
+
+    /* FAQ Section */
+    .faq-section {
+      background: linear-gradient(180deg, transparent 0%, hsla(172, 66%, 50%, 0.03) 100%);
+    }
+
+    .faq-grid {
+      max-width: 800px;
+      margin: 0 auto;
+    }
+
+    .faq-item {
+      border: 1px solid var(--border);
+      border-radius: 0.75rem;
+      margin-bottom: 1rem;
+      overflow: hidden;
+      background: var(--card);
+    }
+
+    .faq-question {
+      width: 100%;
+      padding: 1rem;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      background: transparent;
+      border: none;
+      color: var(--foreground);
+      font-size: 0.9rem;
+      font-weight: 500;
+      text-align: left;
+      cursor: pointer;
+      transition: background 0.2s;
+    }
+
+    .faq-question:hover {
+      background: var(--secondary);
+    }
+
+    .faq-icon {
+      font-size: 1.25rem;
+      transition: transform 0.3s;
+    }
+
+    .faq-item.open .faq-icon {
+      transform: rotate(45deg);
+    }
+
+    .faq-answer {
+      max-height: 0;
+      overflow: hidden;
+      transition: max-height 0.3s ease-out;
+    }
+
+    .faq-item.open .faq-answer {
+      max-height: 200px;
+    }
+
+    .faq-answer-content {
+      padding: 0 1rem 1rem;
+      color: var(--muted-foreground);
+      font-size: 0.875rem;
+      line-height: 1.7;
+    }
+
+    /* CTA Section */
+    .cta-section {
+      text-align: center;
+      padding: 4rem 0;
+    }
+
+    .cta-box {
+      background: linear-gradient(135deg, hsla(263, 70%, 50%, 0.1), hsla(172, 66%, 50%, 0.1));
+      border: 1px solid hsla(263, 70%, 50%, 0.2);
+      border-radius: 1.5rem;
+      padding: 3rem 1.5rem;
+      position: relative;
+      overflow: hidden;
+    }
+
+    .cta-box::before {
+      content: '';
+      position: absolute;
+      top: 0;
+      left: 0;
+      right: 0;
+      bottom: 0;
+      background: radial-gradient(circle at 30% 50%, hsla(263, 70%, 50%, 0.1) 0%, transparent 50%),
+                  radial-gradient(circle at 70% 50%, hsla(172, 66%, 50%, 0.1) 0%, transparent 50%);
+      pointer-events: none;
+    }
+
+    .cta-title {
+      font-size: clamp(1.5rem, 4vw, 2.5rem);
+      font-weight: 700;
+      margin-bottom: 1rem;
+      position: relative;
+    }
+
+    .cta-description {
+      color: var(--muted-foreground);
+      margin-bottom: 2rem;
+      font-size: 1rem;
+      position: relative;
+    }
+
+    .cta-actions {
+      position: relative;
+    }
+
+    /* Footer */
+    .footer {
+      border-top: 1px solid var(--border);
+      padding: 2rem 0;
+    }
+
+    .footer-content {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      flex-wrap: wrap;
+      gap: 1.5rem;
+    }
+
+    .footer-links {
+      display: flex;
+      gap: 1.5rem;
+      list-style: none;
+      flex-wrap: wrap;
+    }
+
+    .footer-links a {
+      color: var(--muted-foreground);
+      text-decoration: none;
+      font-size: 0.875rem;
+      transition: color 0.2s;
+    }
+
+    .footer-links a:hover {
+      color: var(--foreground);
+    }
+
+    .footer-copyright {
+      color: var(--muted-foreground);
+      font-size: 0.875rem;
+    }
+
+    /* Animations */
+    @keyframes fadeInUp {
+      from {
+        opacity: 0;
+        transform: translateY(20px);
+      }
+      to {
+        opacity: 1;
+        transform: translateY(0);
+      }
+    }
+
+    .animate-on-scroll {
+      opacity: 0;
+      transform: translateY(30px);
+      transition: opacity 0.6s ease-out, transform 0.6s ease-out;
+    }
+
+    .animate-on-scroll.visible {
+      opacity: 1;
+      transform: translateY(0);
+    }
+
+    /* Mobile Navigation */
+    .mobile-menu-btn {
+      display: none;
+      background: none;
+      border: none;
+      color: var(--foreground);
+      font-size: 1.5rem;
+      cursor: pointer;
+      padding: 0.5rem;
+    }
+
+    .mobile-nav {
+      display: none;
+      position: fixed;
+      top: 4rem;
+      left: 0;
+      right: 0;
+      background: var(--background);
+      border-bottom: 1px solid var(--border);
+      padding: 1rem;
+      flex-direction: column;
+      gap: 0.5rem;
+      z-index: 40;
+      animation: slideDown 0.3s ease-out;
+    }
+
+    .mobile-nav.open {
+      display: flex;
+    }
+
+    .mobile-nav a {
+      color: var(--foreground);
+      text-decoration: none;
+      padding: 0.75rem 1rem;
+      border-radius: 0.5rem;
+      transition: background 0.2s;
+    }
+
+    .mobile-nav a:hover {
+      background: var(--secondary);
+    }
+
+    .mobile-theme-toggle {
+      display: flex;
+      align-items: center;
+      gap: 0.75rem;
+      padding: 0.75rem 1rem;
+      border-radius: 0.5rem;
+      background: none;
+      border: 1px solid var(--border);
+      color: var(--foreground);
+      cursor: pointer;
+      font-size: 0.875rem;
+      transition: background 0.2s;
+      width: 100%;
+    }
+
+    .mobile-theme-toggle:hover {
+      background: var(--secondary);
+    }
+
+    @keyframes slideDown {
+      from {
+        opacity: 0;
+        transform: translateY(-10px);
+      }
+      to {
+        opacity: 1;
+        transform: translateY(0);
+      }
+    }
+
+    /* Tablet */
+    @media (max-width: 1024px) {
+      .rag-grid {
+        gap: 2rem;
+      }
+    }
+
+    /* Mobile */
+    @media (max-width: 768px) {
+      .nav-links {
+        display: none;
+      }
+
+      .header-actions .btn {
+        display: none;
+      }
+
+      .header-actions .theme-toggle {
+        display: none;
+      }
+
+      .mobile-menu-btn {
+        display: block;
+      }
+
+      .hero {
+        padding: 6rem 0 3rem;
+      }
+
+      .hero-stats {
+        gap: 1.5rem;
+        margin-top: 2.5rem;
+      }
+
+      .section {
+        padding: 3rem 0;
+      }
+
+      .rag-grid {
+        grid-template-columns: 1fr;
+        gap: 2rem;
+      }
+
+      .footer-content {
+        flex-direction: column;
+        text-align: center;
+      }
+
+      .footer-links {
+        justify-content: center;
+      }
+    }
+
+    /* Small Mobile */
+    @media (max-width: 480px) {
+      .container {
+        padding: 0 1rem;
+      }
+
+      .hero {
+        padding: 5rem 0 2rem;
+      }
+
+      .hero-actions {
+        flex-direction: column;
+        align-items: center;
+      }
+
+      .hero-actions .btn {
+        width: 100%;
+        max-width: 280px;
+      }
+
+      .steps-grid,
+      .features-grid,
+      .use-cases-grid {
+        grid-template-columns: 1fr;
+      }
+
+      .stat {
+        min-width: 100px;
+      }
+    }
+
+    /* Scrollbar */
+    ::-webkit-scrollbar {
+      width: 8px;
+    }
+
+    ::-webkit-scrollbar-track {
+      background: var(--secondary);
+    }
+
+    ::-webkit-scrollbar-thumb {
+      background: var(--muted-foreground);
+      border-radius: 4px;
+    }
+
+    ::-webkit-scrollbar-thumb:hover {
+      background: var(--foreground);
+    }
+  </style>
+</head>
+<body>
+  <!-- Header -->
+  <header class="header">
+    <div class="container header-content">
+      <a href="#" class="logo">
+        <div class="logo-icon">
+          <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+            <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"></path>
+            <polyline points="14 2 14 8 20 8"></polyline>
+            <line x1="16" y1="13" x2="8" y2="13"></line>
+            <line x1="16" y1="17" x2="8" y2="17"></line>
+          </svg>
+        </div>
+        <span class="logo-text">DocuMind AI</span>
+      </a>
+      
+      <nav>
+        <ul class="nav-links">
+          <li><a href="#how-it-works">How It Works</a></li>
+          <li><a href="#features">Features</a></li>
+          <li><a href="#use-cases">Use Cases</a></li>
+          <li><a href="#faq">FAQ</a></li>
+        </ul>
+      </nav>
+      
+      <div class="header-actions">
+        <button class="theme-toggle" aria-label="Toggle theme">
+          <span class="moon-icon">🌙</span>
+          <span class="sun-icon">☀️</span>
+        </button>
+        <a href="#" class="btn btn-outline">Sign In</a>
+        <a href="#" class="btn btn-primary">Get Started</a>
+      </div>
+      
+      <button class="mobile-menu-btn" aria-label="Menu">☰</button>
+    </div>
+  </header>
+
+  <!-- Mobile Navigation -->
+  <nav class="mobile-nav" id="mobileNav">
+    <a href="#how-it-works">How It Works</a>
+    <a href="#features">Features</a>
+    <a href="#use-cases">Use Cases</a>
+    <a href="#faq">FAQ</a>
+    <button class="mobile-theme-toggle" id="mobileThemeToggle">
+      <span class="moon-icon">🌙</span>
+      <span class="sun-icon">☀️</span>
+      <span>Toggle Theme</span>
+    </button>
+    <a href="#">Sign In</a>
+    <a href="#" class="btn btn-primary" style="text-align: center;">Get Started</a>
+  </nav>
+
+  <!-- Hero Section -->
+  <section class="hero">
+    <div class="container">
+      <div class="hero-badge">
+        ✨ <span>Powered by Advanced RAG Technology</span>
+      </div>
+      
+      <h1>
+        Chat with Your <span class="gradient-text">PDFs</span><br>
+        Like Never Before
+      </h1>
+      
+      <p class="hero-description">
+        Upload your documents and get instant, accurate answers. Our AI understands context, 
+        extracts insights, and helps you navigate complex documents effortlessly.
+      </p>
+      
+      <div class="hero-actions">
+        <a href="{{ url_for('chat_page') }}" class="btn btn-primary btn-lg">
+          <span>🚀</span> Start Chatting Now
+        </a>
+        <a href="#how-it-works" class="btn btn-secondary btn-lg">
+          <span>▶️</span> Watch Demo
+        </a>
+      </div>
+      
+      <div class="hero-stats">
+        <div class="stat">
+          <div class="stat-value">10K+</div>
+          <div class="stat-label">Documents Processed</div>
+        </div>
+        <div class="stat">
+          <div class="stat-value">50K+</div>
+          <div class="stat-label">Questions Answered</div>
+        </div>
+        <div class="stat">
+          <div class="stat-value">99%</div>
+          <div class="stat-label">Accuracy Rate</div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- How It Works Section -->
+  <section id="how-it-works" class="section">
+    <div class="container">
+      <div class="section-header animate-on-scroll">
+        <div class="section-badge">How It Works</div>
+        <h2 class="section-title">Four Simple Steps</h2>
+        <p class="section-description">
+          From upload to insight in minutes. Our streamlined process makes document analysis effortless.
+        </p>
+      </div>
+      
+      <div class="steps-grid">
+        <div class="step-card animate-on-scroll">
+          <div class="step-number">1</div>
+          <h3 class="step-title">Upload Your PDF</h3>
+          <p class="step-description">
+            Simply drag and drop your PDF files or click to upload. We support documents of all sizes and complexities.
+          </p>
+        </div>
+        
+        <div class="step-card animate-on-scroll">
+          <div class="step-number">2</div>
+          <h3 class="step-title">AI Processing</h3>
+          <p class="step-description">
+            Our system chunks your document, creates embeddings, and builds a semantic index for intelligent retrieval.
+          </p>
+        </div>
+        
+        <div class="step-card animate-on-scroll">
+          <div class="step-number">3</div>
+          <h3 class="step-title">Ask Questions</h3>
+          <p class="step-description">
+            Type your questions in natural language. No special syntax or keywords required - just ask like you would a human.
+          </p>
+        </div>
+        
+        <div class="step-card animate-on-scroll">
+          <div class="step-number">4</div>
+          <h3 class="step-title">Get Cited Answers</h3>
+          <p class="step-description">
+            Receive accurate answers with direct citations to the source text, so you can verify and explore further.
+          </p>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- RAG Architecture Section -->
+  <section id="rag" class="section rag-section">
+    <div class="container">
+      <div class="section-header animate-on-scroll">
+        <div class="section-badge">Technology</div>
+        <h2 class="section-title">RAG Architecture Explained</h2>
+        <p class="section-description">
+          Retrieval-Augmented Generation combines the best of search and AI generation.
+        </p>
+      </div>
+      
+      <div class="rag-grid">
+        <div class="rag-diagram animate-on-scroll">
+          <div class="rag-flow">
+            <div class="rag-step">
+              <div class="rag-icon">📄</div>
+              <div class="rag-step-content">
+                <h4>Document Ingestion</h4>
+                <p>PDF is parsed and split into semantic chunks</p>
+              </div>
+            </div>
+            
+            <div class="arrow">↓</div>
+            
+            <div class="rag-step">
+              <div class="rag-icon">🧮</div>
+              <div class="rag-step-content">
+                <h4>Embedding Generation</h4>
+                <p>Each chunk is converted to vector representation</p>
+              </div>
+            </div>
+            
+            <div class="arrow">↓</div>
+            
+            <div class="rag-step">
+              <div class="rag-icon">🔍</div>
+              <div class="rag-step-content">
+                <h4>Semantic Search</h4>
+                <p>Your question finds the most relevant chunks</p>
+              </div>
+            </div>
+            
+            <div class="arrow">↓</div>
+            
+            <div class="rag-step">
+              <div class="rag-icon">🤖</div>
+              <div class="rag-step-content">
+                <h4>Context Augmentation</h4>
+                <p>Retrieved chunks are sent to the AI model</p>
+              </div>
+            </div>
+            
+            <div class="arrow">↓</div>
+            
+            <div class="rag-step">
+              <div class="rag-icon">💬</div>
+              <div class="rag-step-content">
+                <h4>Answer Generation</h4>
+                <p>AI generates accurate, grounded response</p>
+              </div>
+            </div>
+          </div>
+        </div>
+        
+        <div class="rag-explanation animate-on-scroll">
+          <h3>Why RAG Matters</h3>
+          <p>
+            Traditional AI models can hallucinate or provide outdated information. 
+            RAG solves this by grounding responses in your actual documents, ensuring 
+            accuracy and relevance.
+          </p>
+          
+          <div class="rag-benefits">
+            <div class="rag-benefit">
+              <div class="benefit-icon">✓</div>
+              <p><strong>Grounded Responses:</strong> Every answer is backed by your document content</p>
+            </div>
+            <div class="rag-benefit">
+              <div class="benefit-icon">✓</div>
+              <p><strong>No Hallucinations:</strong> AI only uses information from your documents</p>
+            </div>
+            <div class="rag-benefit">
+              <div class="benefit-icon">✓</div>
+              <p><strong>Source Citations:</strong> Verify answers with exact document references</p>
+            </div>
+            <div class="rag-benefit">
+              <div class="benefit-icon">✓</div>
+              <p><strong>Semantic Understanding:</strong> Finds relevant info even with different wording</p>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- Features Section -->
+  <section id="features" class="section">
+    <div class="container">
+      <div class="section-header animate-on-scroll">
+        <div class="section-badge">Features</div>
+        <h2 class="section-title">Everything You Need</h2>
+        <p class="section-description">
+          Powerful tools designed to make document analysis simple and effective.
+        </p>
+      </div>
+      
+      <div class="features-grid">
+        <div class="feature-card animate-on-scroll">
+          <div class="feature-icon">⚡</div>
+          <h3 class="feature-title">Lightning Fast</h3>
+          <p class="feature-description">
+            Get answers in seconds, not minutes. Our optimized pipeline ensures rapid response times.
+          </p>
+        </div>
+        
+        <div class="feature-card animate-on-scroll">
+          <div class="feature-icon">🎯</div>
+          <h3 class="feature-title">Precision Answers</h3>
+          <p class="feature-description">
+            Advanced semantic search finds exactly what you need, even with complex queries.
+          </p>
+        </div>
+        
+        <div class="feature-card animate-on-scroll">
+          <div class="feature-icon">📑</div>
+          <h3 class="feature-title">Multi-Document</h3>
+          <p class="feature-description">
+            Upload multiple documents and query across all of them simultaneously.
+          </p>
+        </div>
+        
+        <div class="feature-card animate-on-scroll">
+          <div class="feature-icon">🔒</div>
+          <h3 class="feature-title">Secure & Private</h3>
+          <p class="feature-description">
+            Your documents are encrypted and never shared. Enterprise-grade security.
+          </p>
+        </div>
+        
+        <div class="feature-card animate-on-scroll">
+          <div class="feature-icon">🏷️</div>
+          <h3 class="feature-title">Smart Tagging</h3>
+          <p class="feature-description">
+            AI automatically tags and categorizes your documents for easy organization.
+          </p>
+        </div>
+        
+        <div class="feature-card animate-on-scroll">
+          <div class="feature-icon">💾</div>
+          <h3 class="feature-title">Chat History</h3>
+          <p class="feature-description">
+            All your conversations are saved and searchable. Pick up where you left off.
+          </p>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- Use Cases Section -->
+  <section id="use-cases" class="section">
+    <div class="container">
+      <div class="section-header animate-on-scroll">
+        <div class="section-badge">Use Cases</div>
+        <h2 class="section-title">Perfect For</h2>
+        <p class="section-description">
+          Discover how professionals across industries use DocuMind AI.
+        </p>
+      </div>
+      
+      <div class="use-cases-grid">
+        <div class="use-case-card animate-on-scroll">
+          <div class="use-case-icon">📚</div>
+          <h3 class="use-case-title">Research & Academia</h3>
+          <p class="use-case-description">
+            Quickly extract insights from research papers, theses, and academic journals.
+          </p>
+        </div>
+        
+        <div class="use-case-card animate-on-scroll">
+          <div class="use-case-icon">⚖️</div>
+          <h3 class="use-case-title">Legal Documents</h3>
+          <p class="use-case-description">
+            Navigate contracts, case files, and legal briefs with precision.
+          </p>
+        </div>
+        
+        <div class="use-case-card animate-on-scroll">
+          <div class="use-case-icon">💼</div>
+          <h3 class="use-case-title">Business Reports</h3>
+          <p class="use-case-description">
+            Analyze financial reports, market research, and strategic documents.
+          </p>
+        </div>
+        
+        <div class="use-case-card animate-on-scroll">
+          <div class="use-case-icon">🏥</div>
+          <h3 class="use-case-title">Healthcare</h3>
+          <p class="use-case-description">
+            Review medical literature, patient records, and clinical guidelines.
+          </p>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- FAQ Section -->
+  <section id="faq" class="section faq-section">
+    <div class="container">
+      <div class="section-header animate-on-scroll">
+        <div class="section-badge">FAQ</div>
+        <h2 class="section-title">Frequently Asked Questions</h2>
+        <p class="section-description">
+          Got questions? We've got answers.
+        </p>
+      </div>
+      
+      <div class="faq-grid">
+        <div class="faq-item animate-on-scroll">
+          <button class="faq-question">
+            <span>What file formats are supported?</span>
+            <span class="faq-icon">+</span>
+          </button>
+          <div class="faq-answer">
+            <div class="faq-answer-content">
+              Currently, we support PDF files of all sizes. We're working on adding support for Word documents, 
+              PowerPoint presentations, and other common formats in the near future.
+            </div>
+          </div>
+        </div>
+        
+        <div class="faq-item animate-on-scroll">
+          <button class="faq-question">
+            <span>How accurate are the answers?</span>
+            <span class="faq-icon">+</span>
+          </button>
+          <div class="faq-answer">
+            <div class="faq-answer-content">
+              Our RAG system achieves 99%+ accuracy by grounding all answers in your document content. 
+              Every response includes source citations so you can verify the information.
+            </div>
+          </div>
+        </div>
+        
+        <div class="faq-item animate-on-scroll">
+          <button class="faq-question">
+            <span>Is my data secure?</span>
+            <span class="faq-icon">+</span>
+          </button>
+          <div class="faq-answer">
+            <div class="faq-answer-content">
+              Absolutely. All documents are encrypted at rest and in transit. We use enterprise-grade 
+              security practices and never share your data with third parties.
+            </div>
+          </div>
+        </div>
+        
+        <div class="faq-item animate-on-scroll">
+          <button class="faq-question">
+            <span>Can I use it for multiple documents?</span>
+            <span class="faq-icon">+</span>
+          </button>
+          <div class="faq-answer">
+            <div class="faq-answer-content">
+              Yes! You can upload multiple documents and our system will search across all of them 
+              to find the most relevant information for your queries.
+            </div>
+          </div>
+        </div>
+        
+        <div class="faq-item animate-on-scroll">
+          <button class="faq-question">
+            <span>What languages are supported?</span>
+            <span class="faq-icon">+</span>
+          </button>
+          <div class="faq-answer">
+            <div class="faq-answer-content">
+              Our AI supports documents in multiple languages including English, Spanish, French, German, 
+              Chinese, Japanese, and many more. You can even ask questions in a different language than the document.
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- CTA Section -->
+  <section class="section cta-section">
+    <div class="container">
+      <div class="cta-box animate-on-scroll">
+        <h2 class="cta-title">Ready to Transform Your Document Workflow?</h2>
+        <p class="cta-description">
+          Join thousands of professionals who save hours every week with DocuMind AI.
+        </p>
+        <div class="cta-actions">
+          <a href="{{ url_for('chat_page') }}" class="btn btn-primary btn-lg">Get Started for Free</a>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- Footer -->
+  <footer class="footer">
+    <div class="container footer-content">
+      <a href="#" class="logo">
+        <div class="logo-icon">
+          <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+            <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"></path>
+            <polyline points="14 2 14 8 20 8"></polyline>
+          </svg>
+        </div>
+        <span class="logo-text">DocuMind AI</span>
+      </a>
+      
+      <ul class="footer-links">
+        <li><a href="#">Privacy Policy</a></li>
+        <li><a href="#">Terms of Service</a></li>
+        <li><a href="#">Contact</a></li>
+        <li><a href="#">Documentation</a></li>
+      </ul>
+      
+      <p class="footer-copyright">
+        © 2026 DocuMind AI. All rights reserved.
+      </p>
+    </div>
+  </footer>
+
+  <script>
+    // Theme Toggle
+    const themeToggle = document.querySelector('.theme-toggle');
+    const mobileThemeToggle = document.getElementById('mobileThemeToggle');
+    const root = document.documentElement;
+    
+    // Check for saved theme preference or default to dark
+    const savedTheme = localStorage.getItem('theme') || 'dark';
+    if (savedTheme === 'light') {
+      root.classList.add('light');
+    }
+    
+    function toggleTheme() {
+      root.classList.toggle('light');
+      const isLight = root.classList.contains('light');
+      localStorage.setItem('theme', isLight ? 'light' : 'dark');
+    }
+
+    themeToggle.addEventListener('click', toggleTheme);
+    mobileThemeToggle.addEventListener('click', toggleTheme);
+
+    // Mobile Menu Toggle
+    const mobileMenuBtn = document.querySelector('.mobile-menu-btn');
+    const mobileNav = document.getElementById('mobileNav');
+    
+    mobileMenuBtn.addEventListener('click', () => {
+      mobileNav.classList.toggle('open');
+      mobileMenuBtn.textContent = mobileNav.classList.contains('open') ? '✕' : '☰';
+    });
+
+    // Close mobile menu when clicking a link (except theme toggle)
+    mobileNav.querySelectorAll('a').forEach(link => {
+      link.addEventListener('click', () => {
+        mobileNav.classList.remove('open');
+        mobileMenuBtn.textContent = '☰';
+      });
+    });
+
+    // FAQ Toggle
+    document.querySelectorAll('.faq-question').forEach(button => {
+      button.addEventListener('click', () => {
+        const item = button.parentElement;
+        const isOpen = item.classList.contains('open');
+        
+        // Close all other items
+        document.querySelectorAll('.faq-item').forEach(i => i.classList.remove('open'));
+        
+        // Toggle current item
+        if (!isOpen) {
+          item.classList.add('open');
+        }
+      });
+    });
+
+    // Scroll animations
+    const observerOptions = {
+      root: null,
+      rootMargin: '0px',
+      threshold: 0.1
+    };
+
+    const observer = new IntersectionObserver((entries) => {
+      entries.forEach(entry => {
+        if (entry.isIntersecting) {
+          entry.target.classList.add('visible');
+        }
+      });
+    }, observerOptions);
+
+    document.querySelectorAll('.animate-on-scroll').forEach(el => {
+      observer.observe(el);
+    });
+
+    // Smooth scroll for navigation links
+    document.querySelectorAll('a[href^="#"]').forEach(anchor => {
+      anchor.addEventListener('click', function(e) {
+        e.preventDefault();
+        const target = document.querySelector(this.getAttribute('href'));
+        if (target) {
+          target.scrollIntoView({
+            behavior: 'smooth',
+            block: 'start'
+          });
+        }
+      });
+    });
+  </script>
+</body>
+</html>

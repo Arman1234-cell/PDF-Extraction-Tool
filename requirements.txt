@@ -1,0 +1,10 @@
+flask
+gunicorn
+werkzeug
+pymupdf4llm
+google-genai
+chromadb
+sentence-transformers
+langchain-text-splitters
+python-dotenv
+pytesseract

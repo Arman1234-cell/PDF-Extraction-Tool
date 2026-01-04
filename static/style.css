@@ -1,0 +1,263 @@
+/* --- Root Variables & Theme Definition --- */
+:root {
+    /* Light Mode Default */
+    --primary: #1877f2;
+    --accent: #00d2ff;
+    --bg-gradient: linear-gradient(135deg, #ffffff 0%, #eef2f7 100%);
+    --bg-solid: #f8f9fa;
+    --text-main: #202124;
+    --glass: rgba(255, 255, 255, 0.8);
+    --bot-msg: #f1f0f0;
+    --border: rgba(0, 0, 0, 0.1);
+}
+
+body.dark-mode {
+    /* The Night Mode Gradient from the Image */
+    --bg-gradient: radial-gradient(circle at top right, #1e293b, #0f172a, #020617);
+    --bg-solid: #0f172a;
+    --text-main: #f8fafc;
+    --glass: rgba(255, 255, 255, 0.05);
+    --bot-msg: #1e293b;
+    --border: rgba(255, 255, 255, 0.1);
+}
+
+/* --- Global Styles --- */
+body {
+    font-family: 'Lexend', sans-serif;
+    background: var(--bg-gradient);
+    background-attachment: fixed; /* Keeps gradient light-source in place */
+    background-color: var(--bg-solid);
+    color: var(--text-main);
+    margin: 0;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    min-height: 100vh;
+    transition: background 0.5s ease, color 0.4s ease; /* Smooth shift */
+}
+
+/* --- Theme Toggle Icon & Animation --- */
+.theme-toggle {
+    position: fixed;
+    top: 25px;
+    right: 25px;
+    width: 45px;
+    height: 45px;
+    background: var(--glass);
+    backdrop-filter: blur(10px);
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    cursor: pointer;
+    box-shadow: 0 4px 12px rgba(0,0,0,0.1);
+    z-index: 1000;
+    transition: transform 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+}
+
+.theme-toggle:hover { transform: scale(1.1); }
+.rotate-icon { transform: rotate(360deg); transition: 0.5s ease; }
+
+/* --- Chat & Landing Container --- */
+#chat-container, .hero {
+    width: 95%;
+    max-width: 100vw;
+    height: 90vh;
+    background: var(--glass);
+    backdrop-filter: blur(12px); /* Glassmorphism effect */
+    border: 1px solid var(--border);
+    border-radius: 24px;
+    display: flex;
+    flex-direction: column;
+    overflow: hidden;
+    box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.5);
+}
+
+header {
+    padding: 25px;
+    background: rgba(15, 23, 42, 0.2);
+    border-bottom: 1px solid var(--border);
+}
+
+/* --- Chat Specifics --- */
+#chat-window {
+    flex: 1;
+    padding: 25px;
+    overflow-y: auto;
+    display: flex;
+    flex-direction: column;
+    gap: 20px;
+}
+
+.msg {
+    max-width: 85%;
+    padding: 16px 20px;
+    border-radius: 18px;
+    line-height: 1.6;
+    font-size: 1rem;
+}
+
+.user-msg {
+    align-self: flex-end;
+    background: linear-gradient(135deg, var(--primary), var(--accent));
+    color: white;
+    border-bottom-right-radius: 4px;
+}
+
+.bot-msg {
+    align-self: flex-start;
+    background: var(--bot-msg);
+    border: 1px solid var(--border);
+    border-bottom-left-radius: 4px;
+}
+
+/* Color Coding for Highlights */
+.highlight-tech { color: #38bdf8; font-weight: 600; }
+.highlight-key { color: #4ade80; font-weight: 600; }
+.highlight-data { color: #fbbf24; font-weight: 600; }
+
+/* --- Forms & Buttons --- */
+footer, .input-area {
+    padding: 20px;
+    background: rgba(15, 23, 42, 0.1);
+    display: flex;
+    gap: 15px;
+}
+
+input[type="text"] {
+    flex: 1;
+    background: rgba(255, 255, 255, 0.05);
+    border: 1px solid var(--border);
+    color: inherit;
+    padding: 14px;
+    border-radius: 12px;
+    outline: none;
+}
+
+button, .cta-button {
+    background: var(--primary);
+    color: white;
+    padding: 12px 25px;
+    border-radius: 12px;
+    border: none;
+    cursor: pointer;
+    font-weight: bold;
+    text-decoration: none;
+    transition: 0.3s;
+    display: inline-block;
+}
+
+button:hover, .cta-button:hover {
+    background: var(--accent);
+    transform: translateY(-2px);
+}
+/* new */
+/* Layout Wrapper */
+.app-wrapper {
+    display: flex;
+    width: 100vw;
+    height: calc(100vh - 60px); /* Adjust for top-nav height */
+    margin-top: 60px;
+}
+
+/* Top Navigation & Hamburger */
+.top-nav {
+    position: fixed;
+    top: 0; left: 0; right: 0;
+    height: 60px;
+    background: var(--glass);
+    backdrop-filter: blur(15px);
+    display: flex;
+    align-items: center;
+    padding: 0 20px;
+    z-index: 1001;
+    border-bottom: 1px solid var(--border);
+}
+
+.hamburger {
+    cursor: pointer;
+    width: 30px;
+    height: 20px;
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
+    margin-right: 20px;
+}
+
+.hamburger span {
+    display: block;
+    height: 3px;
+    width: 100%;
+    background: var(--text-main);
+    border-radius: 9px;
+    transition: 0.3s;
+}
+
+/* Sidebar Styling */
+.sidebar {
+    width: 300px;
+    background: var(--glass);
+    backdrop-filter: blur(20px);
+    border-right: 1px solid var(--border);
+    transition: transform 0.3s ease, width 0.3s ease;
+    overflow-y: auto;
+    display: flex;
+    flex-direction: column;
+}
+
+.sidebar.collapsed {
+    transform: translateX(-100%);
+    width: 0;
+}
+
+.chat-main {
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+    position: relative;
+    transition: margin-left 0.3s ease;
+}
+
+/* Sidebar Inner Content */
+.sidebar-header { padding: 20px; text-align: center; }
+.upload-section { padding: 0 20px; display: flex; flex-direction: column; gap: 10px; }
+.upload-label { 
+    padding: 10px; background: rgba(255,255,255,0.1); 
+    border: 1px dashed var(--border); border-radius: 8px; text-align: center; cursor: pointer;
+}
+/* new new */
+/* Sidebar Topics Container */
+#tag-box {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 10px;
+    padding: 10px 0;
+}
+
+/* Topic Pill Styling */
+.topic-tag {
+    background-color: #e7f3ff; /* Light blue background */
+    color: #1877f2;            /* Darker blue text */
+    padding: 6px 16px;         /* Horizontal padding for pill shape */
+    border-radius: 20px;       /* Fully rounded corners */
+    font-size: 0.85rem;
+    font-weight: 500;
+    cursor: pointer;
+    border: 1px solid transparent;
+    transition: all 0.2s ease;
+    white-space: nowrap;       /* Prevents text wrapping inside the pill */
+}
+
+.topic-tag:hover {
+    background-color: #d1e9ff; /* Slightly darker on hover */
+    transform: translateY(-1px);
+    box-shadow: 0 2px 5px rgba(0,0,0,0.05);
+}
+
+/* Label for the section */
+.topics-label {
+    font-weight: 600;
+    margin-bottom: 12px;
+    display: block;
+    color: var(--text-main);
+}

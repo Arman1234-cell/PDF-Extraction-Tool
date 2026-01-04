@@ -63,15 +63,7 @@ The application uses **Retrieval-Augmented Generation (RAG)** to ensure that eve
 
 
 
----
-title: PdfExtraction
-emoji: 🐨
-colorFrom: yellow
-colorTo: yellow
-sdk: docker
-pinned: false
----
 
-Check out the configuration reference at https://huggingface.co/docs/hub/spaces-config-reference
+
 
 

@@ -14,12 +14,13 @@
 ## 🌟 Quick Overview
 - **Engine:** Google Gemini 2.0 Flash & ChromaDB.
 - **Capability:** Instant indexing, automated topic tagging, and cited answers.
-- **UI:** Responsive Dark/Light mode dashboard with mobile auto-indexing.
-- **Trust:** Grounded responses based strictly on document context to prevent AI hallucinations.
+- **UI:** **Fully Responsive** Dark/Light mode dashboard with mobile auto-indexing.
+- **Trust:** Grounded responses based strictly on document context to provide maximum factual precision.
 
 ---
 
 ## ✨ Key Features
+- **📱 Mobile Optimized:** A fully responsive interface designed for seamless use on smartphones, tablets, and desktops.
 - **🚀 Instant Indexing:** Upload any PDF and start chatting in seconds.
 - **🎯 Context-Aware Answers:** Our AI understands the full context of your document to provide precise insights.
 - **🏷️ Automated Topic Tagging:** Uses AI to categorize your documents with smart, descriptive tags.
@@ -29,7 +30,9 @@
 ---
 
 ## 🛠️ How It Works (RAG Architecture)
-The application uses **Retrieval-Augmented Generation (RAG)** to ensure that every answer the AI provides is backed by the actual text in your documents, preventing hallucinations:
+The application uses **Retrieval-Augmented Generation (RAG)** to ensure that every answer the AI provides is backed by the actual text in your documents:
+
+
 
 1. **Ingestion:** The PDF is parsed using OCR and split into semantic chunks.
 2. **Vectorization:** Each chunk is converted into a vector representation and stored in **ChromaDB**.
